@@ -1,0 +1,20 @@
+{
+  "title": "Order Intelligence Hub",
+  "subtitle": "Deterministic feasibility checking, risk scoring, and dispatch tracking",
+  "searchPlaceholder": "Search orders by customer or order #...",
+  "newOrderBtn": "New Order Feasibility",
+  "customerName": "Customer Name",
+  "quantity": "Quantity",
+  "deliveryDate": "Delivery Date",
+  "material": "Material",
+  "machine": "Machine",
+  "priority": "Priority",
+  "status": "Status",
+  "actions": "Actions",
+  "viewDetails": "View Details",
+  "riskScore": "Risk Score",
+  "onTrack": "On Track",
+  "atRisk": "At Risk",
+  "delayed": "Delayed",
+  "completed": "Completed"
+}

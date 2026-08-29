@@ -1,0 +1,16 @@
+{
+  "title": "फ़ैक्टरी डैशबोर्ड",
+  "welcome": "वापसी पर स्वागत है, {{name}}",
+  "factoryHealth": "फ़ैक्टरी की स्थिति",
+  "ordersOnTrack": "ट्रैक पर ऑर्डर",
+  "machinesRunning": "चल रही मशीनें",
+  "materialAlerts": "सामग्री चेतावनी",
+  "todayDispatches": "आज का डिस्पैच",
+  "criticalAlerts": "गंभीर अलर्ट",
+  "aiDailyBriefing": "एआई दैनिक ब्रीफिंग",
+  "highestPriority": "उच्चतम प्राथमिकता: ऑर्डर #124 समय सीमा से चूकने के जोखिम में है",
+  "viewDetails": "विवरण देखें",
+  "takeAction": "कार्रवाई करें",
+  "delayedOrders": "देरी वाले ऑर्डर",
+  "orderRisk": "ऑर्डर जोखिम"
+}

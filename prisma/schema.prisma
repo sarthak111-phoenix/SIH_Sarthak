@@ -1,0 +1,569 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum FactoryStatus {
+  ONBOARDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MachineStatus {
+  RUNNING
+  IDLE
+  DOWN_BREAKDOWN
+  DOWN_MAINTENANCE
+  DOWN_SETUP
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum OrderStatus {
+  DRAFT
+  RECEIVED
+  DESIGN_APPROVED
+  MATERIAL_READY
+  IN_PRODUCTION
+  QUALITY_CHECK
+  PACKING
+  DISPATCHED
+  CANCELLED
+}
+
+enum FeasibilityStatus {
+  PENDING
+  SAFE
+  POSSIBLE_WITH_RISK
+  NOT_RECOMMENDED
+}
+
+enum OrderPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum IntakeChannel {
+  MANUAL_FORM
+  VOICE
+  PDF_OCR
+  CSV_IMPORT
+}
+
+enum JobStatus {
+  QUEUED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum StageName {
+  RECEIVED
+  DESIGN_APPROVED
+  MATERIAL_READY
+  PRINTING
+  CUTTING
+  FINISHING
+  QC
+  PACKING
+  DISPATCHED
+}
+
+enum StageStatus {
+  PENDING
+  IN_PROGRESS
+  PASSED
+  FAILED
+}
+
+enum DowntimeReason {
+  BREAKDOWN
+  SETUP
+  MATERIAL_WAITING
+  OPERATOR_UNAVAILABLE
+  MAINTENANCE
+  OTHER
+}
+
+enum MaintenanceType {
+  PREVENTIVE
+  BREAKDOWN
+  SCHEDULED
+}
+
+enum KnowledgeCategory {
+  MACHINE_SOP
+  PROCESS_SPEC
+  TROUBLESHOOTING
+  SUPPLIER_NOTE
+  HISTORICAL_DECISION
+}
+
+enum NotificationSeverity {
+  CRITICAL
+  IMPORTANT
+  INFORMATIONAL
+}
+
+model Factory {
+  id              String        @id @default(uuid())
+  name            String
+  code            String        @unique
+  industry        String        @default("PRINTING")
+  currency        String        @default("INR")
+  timezone        String        @default("Asia/Kolkata")
+  status          String        @default("ONBOARDING")
+  onboardingStep  Int           @default(1)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  users           User[]
+  roles           Role[]
+  machines        Machine[]
+  employees       Employee[]
+  materials       Material[]
+  inventories     Inventory[]
+  suppliers       Supplier[]
+  products        Product[]
+  processes       Process[]
+  customers       Customer[]
+  orders          Order[]
+  productionJobs  ProductionJob[]
+  downtimes       MachineDowntime[]
+  wastes          Waste[]
+  reworks         Rework[]
+  maintenances    Maintenance[]
+  jobProfits      JobProfitability[]
+  knowledges      FactoryKnowledge[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+}
+
+model User {
+  id           String    @id @default(uuid())
+  factoryId    String
+  factory      Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  email        String    @unique
+  passwordHash String
+  name         String
+  phone        String?
+  roleId       String
+  role         Role      @relation(fields: [roleId], references: [id])
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  employees    Employee[]
+  auditLogs    AuditLog[]
+  knowledges   FactoryKnowledge[]
+
+  @@index([factoryId, email])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  factoryId   String?
+  factory     Factory? @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name        String
+  permissions String   // JSON string of permission array
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+
+  @@index([factoryId, name])
+}
+
+model Machine {
+  id                     String            @id @default(uuid())
+  factoryId              String
+  factory                Factory           @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name                   String
+  code                   String
+  type                   String
+  status                 String            @default("IDLE")
+  hourlyRate             Float
+  energyConsumptionKw    Float
+  idealOutputRatePerHour Float
+  workStartTime          String            @default("08:00")
+  workEndTime            String            @default("17:00")
+  nextMaintenanceDate    DateTime?
+  isDeleted              Boolean           @default(false)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  capabilities           MachineCapability[]
+  jobs                   ProductionJob[]
+  downtimes              MachineDowntime[]
+  maintenances           Maintenance[]
+
+  @@index([factoryId, isDeleted])
+  @@index([factoryId, status])
+}
+
+model MachineCapability {
+  id                   String   @id @default(uuid())
+  machineId            String
+  machine              Machine  @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  processId            String
+  process              Process  @relation(fields: [processId], references: [id], onDelete: Cascade)
+  setupTimeMinutes     Int
+  maxSpeedUnitsPerHour Float
+  efficiencyFactor     Float    @default(1.0)
+}
+
+model Employee {
+  id               String   @id @default(uuid())
+  factoryId        String
+  factory          Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id])
+  employeeCode     String
+  name             String
+  roleTitle        String
+  hourlyRate       Float
+  shiftHoursPerDay Float    @default(8.0)
+  status           String   @default("ACTIVE")
+  isDeleted        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  jobs             ProductionJob[]
+  stages           ProductionStage[]
+  wastes           Waste[]
+
+  @@index([factoryId, isDeleted])
+}
+
+model Material {
+  id                    String    @id @default(uuid())
+  factoryId             String
+  factory               Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name                  String
+  code                  String
+  category              String
+  unitOfMeasure         String
+  costPerUnit           Float
+  minimumStockThreshold Float
+  reorderQuantity       Float
+  isDeleted             Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  inventory             Inventory?
+  wastes                Waste[]
+
+  @@index([factoryId, isDeleted])
+}
+
+model Inventory {
+  id              String    @id @default(uuid())
+  factoryId       String
+  factory         Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  materialId      String    @unique
+  material        Material  @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  currentStock    Float
+  reservedStock   Float     @default(0)
+  damagedStock    Float     @default(0)
+  lastRestockedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([factoryId])
+}
+
+model Supplier {
+  id                  String   @id @default(uuid())
+  factoryId           String
+  factory             Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name                String
+  code                String
+  contactPerson       String?
+  email               String?
+  phone               String?
+  averageLeadTimeDays Float
+  reliabilityScore    Float    @default(100.0)
+  isDeleted           Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([factoryId, isDeleted])
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  factoryId String
+  factory   Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name      String
+  code      String
+  category  String
+  unitPrice Float
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  processes  Process[]
+  orderItems OrderItem[]
+
+  @@index([factoryId, isDeleted])
+}
+
+model Process {
+  id                        String   @id @default(uuid())
+  factoryId                 String
+  factory                   Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  productId                 String
+  product                   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sequenceOrder             Int
+  name                      String
+  setupTimeMinutes          Int
+  unitProductionTimeSeconds Float
+  scrapPercentage           Float    @default(0.0)
+
+  capabilities              MachineCapability[]
+}
+
+model Customer {
+  id               String   @id @default(uuid())
+  factoryId        String
+  factory          Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  companyName      String
+  contactName      String
+  email            String?
+  phone            String
+  address          String?
+  portalAccessCode String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  orders           Order[]
+
+  @@index([factoryId])
+}
+
+model Order {
+  id                  String    @id @default(uuid())
+  factoryId           String
+  factory             Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  customerId          String
+  customer            Customer  @relation(fields: [customerId], references: [id])
+  orderNumber         String
+  status              String    @default("DRAFT")
+  feasibilityStatus   String    @default("PENDING")
+  totalAmount         Float
+  targetDeadline      DateTime
+  estimatedCompletion DateTime?
+  priority            String    @default("NORMAL")
+  intakeChannel       String    @default("MANUAL_FORM")
+  notes               String?
+  isDeleted           Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  items               OrderItem[]
+  jobs                ProductionJob[]
+  profitability       JobProfitability?
+
+  @@index([factoryId, isDeleted])
+  @@index([factoryId, status])
+  @@index([factoryId, targetDeadline])
+}
+
+model OrderItem {
+  id             String   @id @default(uuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id])
+  quantity       Int
+  unitPrice      Float
+  totalPrice     Float
+  specifications String   // JSON string
+}
+
+model ProductionJob {
+  id                 String    @id @default(uuid())
+  factoryId          String
+  factory            Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  orderId            String
+  order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  machineId          String?
+  machine            Machine?  @relation(fields: [machineId], references: [id])
+  assignedEmployeeId String?
+  assignedEmployee   Employee? @relation(fields: [assignedEmployeeId], references: [id])
+  status             String    @default("QUEUED")
+  plannedStartTime   DateTime?
+  plannedEndTime     DateTime?
+  actualStartTime    DateTime?
+  actualEndTime      DateTime?
+  producedQuantity   Int       @default(0)
+  wasteQuantity      Int       @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  stages             ProductionStage[]
+  wastes             Waste[]
+  reworks            Rework[]
+
+  @@index([factoryId, status])
+}
+
+model ProductionStage {
+  id          String        @id @default(uuid())
+  jobId       String
+  job         ProductionJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  stageName   String
+  status      String        @default("PENDING")
+  startedAt   DateTime?
+  completedAt DateTime?
+  operatorId  String?
+  operator    Employee?     @relation(fields: [operatorId], references: [id])
+  notes       String?
+}
+
+model MachineDowntime {
+  id              String   @id @default(uuid())
+  factoryId       String
+  factory         Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  machineId       String
+  machine         Machine  @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  reasonCategory  String
+  description     String?
+  startTime       DateTime
+  endTime         DateTime?
+  durationMinutes Int?
+  createdAt       DateTime @default(now())
+
+  @@index([factoryId, machineId])
+}
+
+model Waste {
+  id         String        @id @default(uuid())
+  factoryId  String
+  factory    Factory       @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  jobId      String
+  job        ProductionJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  materialId String
+  material   Material      @relation(fields: [materialId], references: [id])
+  quantity   Float
+  reason     String
+  reportedBy String
+  reporter   Employee      @relation(fields: [reportedBy], references: [id])
+  createdAt  DateTime      @default(now())
+
+  @@index([factoryId, jobId])
+}
+
+model Rework {
+  id             String        @id @default(uuid())
+  factoryId      String
+  factory        Factory       @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  jobId          String
+  job            ProductionJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  reworkQuantity Int
+  reason         String
+  additionalCost Float
+  createdAt      DateTime      @default(now())
+
+  @@index([factoryId, jobId])
+}
+
+model Maintenance {
+  id            String    @id @default(uuid())
+  factoryId     String
+  factory       Factory   @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  machineId     String
+  machine       Machine   @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  type          String
+  scheduledDate DateTime
+  completedDate DateTime?
+  cost          Float     @default(0.0)
+  notes         String?
+  createdAt     DateTime  @default(now())
+
+  @@index([factoryId, machineId])
+}
+
+model JobProfitability {
+  id              String   @id @default(uuid())
+  factoryId       String
+  factory         Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  orderId         String   @unique
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  revenue         Float
+  materialCost    Float
+  laborCost       Float
+  machineCost     Float
+  energyCost      Float
+  setupCost       Float
+  wasteCost       Float
+  finishingCost   Float
+  transportCost   Float
+  otherCost       Float
+  expectedProfit  Float
+  minProfit       Float
+  maxProfit       Float
+  confidenceScore Float
+  missingInputs   String   // JSON string array
+
+  @@index([factoryId, orderId])
+}
+
+model FactoryKnowledge {
+  id        String   @id @default(uuid())
+  factoryId String
+  factory   Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  title     String
+  category  String
+  content   String
+  tags      String   // JSON string array
+  createdBy String
+  author    User     @relation(fields: [createdBy], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([factoryId, category])
+}
+
+model Notification {
+  id                String   @id @default(uuid())
+  factoryId         String
+  factory           Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  severity          String
+  title             String
+  message           String
+  groupKey          String?
+  relatedRecordType String?
+  relatedRecordId   String?
+  isRead            Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  @@index([factoryId, isRead])
+  @@index([factoryId, groupKey])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  factoryId String
+  factory   Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String   // JSON string
+  ipAddress String?
+  timestamp DateTime @default(now())
+
+  @@index([factoryId, timestamp])
+}

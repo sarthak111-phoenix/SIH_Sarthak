@@ -1,0 +1,20 @@
+{
+  "dashboard": "Dashboard",
+  "aiCopilot": "AI Copilot",
+  "aiAlerts": "AI Alerts",
+  "orders": "Orders",
+  "aiFeasibility": "AI Feasibility",
+  "production": "Production",
+  "machines": "Machines",
+  "maintenance": "Maintenance",
+  "inventory": "Inventory",
+  "suppliers": "Suppliers",
+  "profitability": "Profitability",
+  "workerView": "Worker View",
+  "memoryBank": "Memory Bank",
+  "factorySetup": "Factory Setup",
+  "settings": "Settings",
+  "signIn": "Sign In",
+  "signOut": "Sign Out",
+  "startFreeTrial": "Start Free Trial"
+}

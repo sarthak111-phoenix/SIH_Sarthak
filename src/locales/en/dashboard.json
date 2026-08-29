@@ -1,0 +1,16 @@
+{
+  "title": "Factory Dashboard",
+  "welcome": "Welcome back, {{name}}",
+  "factoryHealth": "Factory Health",
+  "ordersOnTrack": "Orders On Track",
+  "machinesRunning": "Machines Running",
+  "materialAlerts": "Material Alerts",
+  "todayDispatches": "Today Dispatches",
+  "criticalAlerts": "Critical Alerts",
+  "aiDailyBriefing": "AI Daily Briefing",
+  "highestPriority": "Highest Priority: Order #124 is at risk of missing deadline",
+  "viewDetails": "View Details",
+  "takeAction": "Take Action",
+  "delayedOrders": "Delayed Orders",
+  "orderRisk": "Order Risk"
+}

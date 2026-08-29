@@ -1,0 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;500;600;700;800;900&family=Noto+Sans+Tamil:wght@400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-plus-jakarta: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* USER ATTACHED COLOR PALETTE DESIGN SYSTEM */
+  --palette-light: #90D5FF;   /* Ice / Light Sky Highlight */
+  --palette-vivid: #57B9FF;   /* Vivid Sky Blue Action Accent */
+  --palette-slate: #77B1D4;   /* Muted Slate Blue Surface */
+  --palette-deep: #517891;    /* Deep Denim Blue Base/Tone */
+
+  --background: #f4f7fb;
+  --foreground: #0c2b64;
+  --card-bg: #ffffff;
+  --card-border: #77B1D4;
+  --color-ice: #ebf4ff;
+  --color-sky: #57B9FF;
+  --color-blue: #77B1D4;
+  --color-navy: #517891;
+}
+
+html.dark, html[data-theme="dark"], body.dark {
+  --background: #071324;
+  --foreground: #f1f5f9;
+  --card-bg: #0D1D33;
+  --card-border: #517891;
+  --color-ice: #132847;
+  --color-sky: #57B9FF;
+  --color-blue: #77B1D4;
+  --color-navy: #517891;
+}
+
+body {
+  font-family: var(--font-plus-jakarta);
+  color: var(--foreground);
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(144, 213, 255, 0.25) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(81, 120, 145, 0.3) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(87, 185, 255, 0.15) 0px, transparent 60%);
+  background-attachment: fixed;
+  transition: background-color 0.25s ease, color 0.2s ease;
+}
+
+html.dark body, body.dark {
+  color: #f1f5f9;
+  background-color: #071324;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(144, 213, 255, 0.18) 0px, transparent 45%),
+    radial-gradient(at 85% 25%, rgba(87, 185, 255, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(81, 120, 145, 0.25) 0px, transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Dynamic Smooth Theme Transitions */
+*, *::before, *::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(119, 177, 212, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(87, 185, 255, 0.7);
+}
+
+/* ========================================================
+   PLATFORM-WIDE AUTOMATIC PALETTE & GLASSMOPHISM ADAPTATION
+   Applies palette colors (#90D5FF, #57B9FF, #77B1D4, #517891)
+   to ALL inner pages, cards, panels, forms, and modules
+   ======================================================== */
+
+html.dark .bg-\[\#0D213A\],
+html.dark .bg-\[\#0B1727\],
+html.dark .bg-\[\#0D1D33\],
+html.dark .bg-slate-900,
+html.dark .bg-slate-900\/50,
+html.dark .bg-slate-900\/80,
+html.dark .bg-slate-950,
+html.dark .bg-slate-800,
+html.dark .bg-\[\#0A1A2F\] {
+  background-color: rgba(13, 29, 51, 0.82) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-color: rgba(119, 177, 212, 0.35) !important;
+}
+
+html.dark .border-slate-800,
+html.dark .border-slate-800\/60,
+html.dark .border-slate-800\/90,
+html.dark .border-slate-700,
+html.dark .border-slate-700\/50 {
+  border-color: rgba(119, 177, 212, 0.3) !important;
+}
+
+/* Action Button Palette Overrides */
+.bg-\[\#00A8FF\],
+.bg-blue-600,
+.bg-blue-500 {
+  background-color: #57B9FF !important;
+  color: #071324 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 4px 20px rgba(87, 185, 255, 0.4) !important;
+}
+
+.bg-\[\#00A8FF\]:hover,
+.bg-blue-600:hover,
+.bg-blue-500:hover {
+  background-color: #90D5FF !important;
+  color: #071324 !important;
+  box-shadow: 0 6px 25px rgba(144, 213, 255, 0.6) !important;
+}
+
+/* Primary text highlights */
+.text-\[\#00A8FF\],
+.text-blue-500,
+.text-sky-500 {
+  color: #57B9FF !important;
+}
+
+html.dark .text-\[\#00A8FF\],
+html.dark .text-blue-400,
+html.dark .text-sky-400 {
+  color: #90D5FF !important;
+}
+
+/* Active tab indicators & badges */
+.bg-blue-500\/10,
+.bg-sky-500\/10 {
+  background-color: rgba(144, 213, 255, 0.15) !important;
+  border: 1px solid rgba(144, 213, 255, 0.3) !important;
+}
+
+/* Multilingual Font Support */
+html[lang="hi"] *, body[data-lang="hi"] * { font-family: 'Noto Sans Devanagari', sans-serif !important; }
+html[lang="gu"] *, body[data-lang="gu"] * { font-family: 'Noto Sans Gujarati', sans-serif !important; }
+html[lang="ta"] *, body[data-lang="ta"] * { font-family: 'Noto Sans Tamil', sans-serif !important; }
+html[lang="te"] *, body[data-lang="te"] * { font-family: 'Noto Sans Telugu', sans-serif !important; }
+html[lang="kn"] *, body[data-lang="kn"] * { font-family: 'Noto Sans Kannada', sans-serif !important; }
+html[lang="bn"] *, body[data-lang="bn"] * { font-family: 'Noto Sans Bengali', sans-serif !important; }
+html[lang="pa"] *, body[data-lang="pa"] * { font-family: 'Noto Sans Gurmukhi', sans-serif !important; }
+
+/* ========================================================
+   THE 15 UI DESIGN STYLES & EFFECTS SYSTEM
+   Applied Directly to Website UI Components using Palette (#90D5FF, #57B9FF, #77B1D4, #517891)
+   ======================================================== */
+
+/* 1. SKEUOMORPHISM */
+.style-skeuomorphism, .skeuomorphic-btn {
+  background: linear-gradient(145deg, #77B1D4 0%, #517891 100%);
+  border: 1px solid #90D5FF;
+  border-radius: 16px;
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.style-skeuomorphism:hover, .skeuomorphic-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 3px 6px rgba(255, 255, 255, 0.7),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.5),
+    0 12px 28px rgba(81, 120, 145, 0.4);
+}
+
+/* 2. GLASSMORPHISM */
+.style-glassmorphism, .glass-panel, .glass-card {
+  background: rgba(144, 213, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(144, 213, 255, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(87, 185, 255, 0.2);
+  transition: all 0.3s ease;
+}
+.style-glassmorphism:hover, .glass-panel:hover, .glass-card:hover {
+  background: rgba(144, 213, 255, 0.2);
+  border-color: rgba(87, 185, 255, 0.6);
+  box-shadow: 0 12px 40px 0 rgba(87, 185, 255, 0.35);
+}
+
+/* 3. NEUMORPHISM */
+.style-neumorphism, .neumorphic-card {
+  background: #EBF4FC;
+  border-radius: 24px;
+  box-shadow: 
+    10px 10px 20px #c3d5e6, 
+    -10px -10px 20px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+html.dark .style-neumorphism, html.dark .neumorphic-card {
+  background: #0D1C2E;
+  box-shadow: 
+    8px 8px 18px #060e18, 
+    -8px -8px 18px #142a44;
+  border-color: rgba(119, 177, 212, 0.1);
+}
+
+/* 4. CLAYMORPHISM */
+.style-claymorphism, .clay-btn, .clay-card {
+  background: #57B9FF;
+  border-radius: 28px;
+  color: #071324;
+  font-weight: 900;
+  box-shadow: 
+    8px 16px 24px -4px rgba(81, 120, 145, 0.4),
+    inset 0 -8px 12px rgba(81, 120, 145, 0.4),
+    inset 0 8px 12px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.style-claymorphism:hover, .clay-btn:hover, .clay-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    12px 24px 32px -4px rgba(81, 120, 145, 0.5),
+    inset 0 -10px 14px rgba(81, 120, 145, 0.5),
+    inset 0 10px 14px rgba(255, 255, 255, 0.9);
+}
+
+/* 5. FLAT DESIGN */
+.style-flat, .flat-card {
+  background: #90D5FF;
+  border: 2px solid #57B9FF;
+  border-radius: 12px;
+  box-shadow: none !important;
+}
+
+/* 6. MATERIAL DESIGN */
+.style-material, .material-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid #57B9FF;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+html.dark .style-material, html.dark .material-card {
+  background: #0D1D33;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* 7. FLUENT DESIGN */
+.style-fluent, .fluent-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(144, 213, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(81, 120, 145, 0.15);
+}
+html.dark .style-fluent, html.dark .fluent-card {
+  background: rgba(13, 29, 51, 0.75);
+  border-color: rgba(119, 177, 212, 0.3);
+}
+
+/* 8. LIQUID GLASS */
+.style-liquid-glass, .liquid-card {
+  background: radial-gradient(circle at 20% 20%, rgba(144, 213, 255, 0.3) 0%, rgba(81, 120, 145, 0.1) 100%);
+  backdrop-filter: blur(24px) contrast(110%);
+  border: 1.5px solid rgba(144, 213, 255, 0.6);
+  border-radius: 32px;
+  box-shadow: 0 20px 50px rgba(87, 185, 255, 0.25);
+  animation: liquid-refract 6s ease-in-out infinite;
+}
+
+/* 9. MINIMALIST */
+.style-minimalist, .minimalist-card {
+  background: transparent;
+  border: 1px solid #77B1D4;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+/* 10. BENTO GRID SYSTEM */
+.style-bento, .bento-card {
+  background: rgba(13, 29, 51, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(119, 177, 212, 0.3);
+  border-radius: 28px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+html:not(.dark) .style-bento, html:not(.dark) .bento-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(119, 177, 212, 0.4);
+}
+.style-bento:hover, .bento-card:hover {
+  transform: translateY(-4px);
+  border-color: #57B9FF;
+  box-shadow: 0 20px 40px -15px rgba(87, 185, 255, 0.3);
+}
+
+/* 11. RETRO VINTAGE */
+.style-retro, .retro-card {
+  background: #EBF4FC;
+  border: 3px solid #517891;
+  border-radius: 4px;
+  box-shadow: 6px 6px 0px #517891;
+  color: #071324;
+}
+
+/* 12. CYBERPUNK HUD */
+.style-cyberpunk, .hud-card {
+  background: rgba(7, 19, 36, 0.95);
+  border: 1px solid #57B9FF;
+  box-shadow: 0 0 15px rgba(87, 185, 255, 0.4), inset 0 0 15px rgba(87, 185, 255, 0.2);
+  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+  color: #90D5FF;
+}
+
+/* 13. NEUBRUTALISM */
+.style-neubrutalism, .brutal-btn {
+  background: #57B9FF;
+  color: #071324;
+  border: 3px solid #071324;
+  box-shadow: 5px 5px 0px #071324;
+  font-weight: 900;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+}
+.style-neubrutalism:hover, .brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0px #071324;
+}
+
+/* 14. DARK MODE PRO */
+.style-darkmode-pro, .dark-pro-card {
+  background: #071324;
+  border: 1px solid #517891;
+  border-radius: 20px;
+  color: #90D5FF;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* 15. AURORA UI */
+.style-aurora, .aurora-banner {
+  background: linear-gradient(-45deg, #90D5FF, #57B9FF, #77B1D4, #517891);
+  background-size: 300% 300%;
+  animation: aurora-flow 8s ease infinite;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  box-shadow: 0 12px 36px rgba(87, 185, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+@keyframes aurora-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes liquid-refract {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.02) rotate(0.8deg); }
+}
