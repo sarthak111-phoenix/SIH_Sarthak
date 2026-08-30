@@ -578,6 +578,15 @@ export async function processAgentTask(input: AgentRunInput): Promise<AgentRunOu
       approvalStatus: "COMPLETED",
       nextStep: "You can view the updated machine status on the Machine Monitoring page.",
     };
+  } else if ((parsed.intent as string) === "GREETING") {
+    responsePayload = {
+      result: `Hello! 👋 I am your Factory Operations AI Agent inside FactoryIQ.\n\nI can help you monitor live telemetry, analyze stock shortages, evaluate machine capacity, prepare purchase orders, and reassign machine jobs through deterministic application tools.\n\nHow can I help you manage the factory today?`,
+      why: "User greeted the AI Agent.",
+      actions: ["Greeted user and presented active factory operations capabilities."],
+      impact: "Zero-hallucination agent system active and ready.",
+      approvalStatus: "COMPLETED",
+      nextStep: "Ask me 'list all machines', 'check material shortages', or 'today's briefing'.",
+    };
   } else {
     // UNIVERSAL DYNAMIC FACTORY KNOWLEDGE SYNTHESIZER
     const [machines, inventory, orders, risks] = await Promise.all([
@@ -599,7 +608,8 @@ export async function processAgentTask(input: AgentRunInput): Promise<AgentRunOu
       try {
         const { getAIProvider } = await import("@/ai/provider");
         const llm = getAIProvider();
-        const llmResult = await llm.generateCompletion([
+
+        const llmPromise = llm.generateCompletion([
           {
             role: "system",
             content: `You are the Factory Operations AI Agent inside FactoryIQ. Answer the user's question directly, accurately, and naturally based on the following real live factory database telemetry:
@@ -623,6 +633,12 @@ RULES:
           },
           { role: "user", content: cleanPrompt }
         ]);
+
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("LLM completion timeout (6s)")), 6000)
+        );
+
+        const llmResult = (await Promise.race([llmPromise, timeoutPromise])) as any;
 
         if (llmResult.content && !llmResult.content.includes("MockAIProvider")) {
           responsePayload = {

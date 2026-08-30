@@ -68,6 +68,28 @@ export function parseUserIntent(
     else materialName = "Paper";
   }
 
+  // 0.35 GREETING INTENT
+  if (
+    p === "hi" ||
+    p === "hii" ||
+    p === "hiii" ||
+    p === "hello" ||
+    p === "hey" ||
+    p === "namaste" ||
+    p === "greetings" ||
+    p.startsWith("hi ") ||
+    p.startsWith("hii ") ||
+    p.startsWith("hello ") ||
+    p.startsWith("hey ")
+  ) {
+    return {
+      intent: "GREETING" as any,
+      confidence: 0.99,
+      entities: {},
+      planSteps: ["greet_user", "offer_factory_assistance"],
+    };
+  }
+
   // 0.4 CONFIRM / APPROVAL INTENT
   if (
     p === "yes" ||
