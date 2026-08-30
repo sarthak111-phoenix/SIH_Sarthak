@@ -68,7 +68,142 @@ export function parseUserIntent(
     else materialName = "Paper";
   }
 
-  // 0. COMPLETE / CLEAR / REMOVE MAINTENANCE INTENT
+  // 0.4 CONFIRM / APPROVAL INTENT
+  if (
+    p === "yes" ||
+    p === "do it" ||
+    p === "approve" ||
+    p === "confirm" ||
+    p === "proceed" ||
+    p === "haan" ||
+    p === "kar do" ||
+    p === "thik hai" ||
+    p.startsWith("yes ") ||
+    p.startsWith("approve ") ||
+    p.startsWith("confirm ")
+  ) {
+    return {
+      intent: "CONFIRM_APPROVAL" as any,
+      confidence: 0.99,
+      entities: {},
+      planSteps: ["check_pending_approval", "execute_approved_action"],
+    };
+  }
+
+  // 0.5 CREATE ORDER INTENT
+  if (
+    (p.includes("create") || p.includes("add") || p.includes("new")) &&
+    (p.includes("order") || p.includes("job"))
+  ) {
+    return {
+      intent: "CREATE_ORDER" as any,
+      confidence: 0.95,
+      entities: {
+        orderNumber: orderNumber || `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+        quantity: quantity || 5000,
+        materialName: materialName || "300 GSM Matte Paper",
+      },
+      planSteps: ["check_material_availability", "request_owner_approval"],
+    };
+  }
+
+  // 0.6 CREATE MAINTENANCE INTENT
+  if (
+    (p.includes("schedule") || p.includes("add") || p.includes("create")) &&
+    (p.includes("maintenance") || p.includes("servicing"))
+  ) {
+    return {
+      intent: "CREATE_MAINTENANCE" as any,
+      confidence: 0.95,
+      entities: {
+        machineCode: machineCode || "M-02",
+      },
+      planSteps: ["check_machine_status", "schedule_maintenance_job"],
+    };
+  }
+
+  // 0. CHECK MACHINE MAINTENANCE / HEALTH INTENT
+  if (
+    (p.includes("machine") || p.includes("mac")) &&
+    (
+      p.includes("jrurt") ||
+      p.includes("jaroorat") ||
+      p.includes("zaroorat") ||
+      p.includes("need") ||
+      p.includes("maintenance") ||
+      p.includes("maintenence") ||
+      p.includes("servicing") ||
+      p.includes("repair") ||
+      p.includes("manufacturing") ||
+      p.includes("down") ||
+      p.includes("kharab") ||
+      p.includes("check") ||
+      p.includes("chahiye") ||
+      p.includes("problem") ||
+      p.includes("kya")
+    )
+  ) {
+    return {
+      intent: "CHECK_MACHINE_MAINTENANCE" as any,
+      confidence: 0.98,
+      entities: {
+        machineCode: machineCode || undefined,
+      },
+      planSteps: ["get_machine_telemetry", "retrieve_downtime_history", "check_maintenance_roster"],
+    };
+  }
+
+  // 0. LIST MACHINES INTENT
+  if (
+    (p.includes("machine") || p.includes("mac")) &&
+    (
+      p.includes("list") ||
+      p.includes("all") ||
+      p.includes("show") ||
+      p.includes("give") ||
+      p.includes("get") ||
+      p.includes("view") ||
+      p.includes("roster") ||
+      p.includes("sab") ||
+      p.includes("kitne") ||
+      p.includes("status")
+    )
+  ) {
+    return {
+      intent: "LIST_MACHINES" as any,
+      confidence: 0.98,
+      entities: {},
+      planSteps: ["list_machines", "check_machine_statuses"],
+    };
+  }
+
+  // 0.1 LIST INVENTORY INTENT
+  if (
+    (p.includes("inventory") || p.includes("material") || p.includes("stock") || p.includes("samagri")) &&
+    (p.includes("list") || p.includes("all") || p.includes("show") || p.includes("give") || p.includes("view") || p.includes("sab"))
+  ) {
+    return {
+      intent: "LIST_INVENTORY" as any,
+      confidence: 0.98,
+      entities: {},
+      planSteps: ["get_inventory"],
+    };
+  }
+
+  // 0.2 LIST ORDERS INTENT
+  if (
+    (p.includes("order") || p.includes("job")) &&
+    (p.includes("list") || p.includes("all") || p.includes("show") || p.includes("give") || p.includes("view") || p.includes("pending"))
+  ) {
+    return {
+      intent: "LIST_ORDERS" as any,
+      confidence: 0.98,
+      entities: {},
+      planSteps: ["get_orders"],
+    };
+  }
+
+  // 0.3 COMPLETE / CLEAR / REMOVE MAINTENANCE INTENT
   if (
     (p.includes("maintenence") || p.includes("maintenance") || p.includes("servicing") || p.includes("repair")) &&
     (

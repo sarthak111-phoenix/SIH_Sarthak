@@ -34,8 +34,14 @@ html.dark, html[data-theme="dark"], body.dark {
   --color-navy: #517891;
 }
 
+html {
+  font-size: 108%; /* Slightly increased base font size across entire platform */
+}
+
 body {
   font-family: var(--font-plus-jakarta);
+  font-size: 1rem;
+  line-height: 1.65;
   color: var(--foreground);
   background-color: var(--background);
   background-image: 

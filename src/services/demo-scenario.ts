@@ -80,12 +80,12 @@ export async function run20kBrochureDemoScenario() {
         status: "IN_PRODUCTION",
         priority: "NORMAL",
         totalAmount: 25000 * i,
-        targetDeadline: new Date("2026-08-28T18:00:00Z"),
+        targetDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       },
     });
   }
 
-  // 8. Intake Urgent 20,000-Brochure Order Due 25 August 2026
+  // 8. Intake Urgent 20,000-Brochure Order Due in 2 Days
   const urgentOrder = await db.order.create({
     data: {
       factoryId,
@@ -94,7 +94,7 @@ export async function run20kBrochureDemoScenario() {
       status: "RECEIVED",
       priority: "URGENT",
       totalAmount: 170000,
-      targetDeadline: new Date("2026-08-29T18:00:00Z"),
+      targetDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
       items: {
         create: {
           productId: brochureProd.id,
